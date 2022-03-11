@@ -33,22 +33,22 @@ function operate(num1, num2, operator) {
     if (operator === `&#215;`) {
         result = multiply(num1, num2);
         displayLower.innerText = `${result}`;
-
+        return result;
     }
     else if (operator === `&#247;`) {
         result = divide(num1, num2);
         displayLower.innerText = `${result}`;
-
+        return result;
     }
     else if (operator === `&#8722;`) {
         result = subtract(num1, num2);
         displayLower.innerText = `${result}`;
-
+        return result;
     }
     else if (operator === `&#43;`) {
         result = add(num1, num2);
         displayLower.innerText = `${result}`;
-
+        return result;
     }
 }
 
