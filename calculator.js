@@ -1,7 +1,8 @@
-let inputFirstValue = true;
+const DEFAULT_VALUE = 0;
+
+let displayValue = DEFAULT_VALUE;
+let storedValue = DEFAULT_VALUE;
 let currentOperator;
-let firstValue = 0;
-let secondValue = 0;
 
 const numbers = document.querySelectorAll('.numpad');
 let numbersArray = Array.from(numbers);
@@ -17,81 +18,99 @@ const displayUpper = document.getElementById('display-upper');
 const displayLower = document.getElementById('display-lower');
 const equalSign = document.getElementById('equal');
 const clear = document.getElementById('clear');
+const sqrt = document.getElementById('sqrt');
+const plusMinus = document.getElementById('plusminus');
 
 clear.addEventListener('click', clearCalculator);
-equalSign.addEventListener('click', operate(firstValue, secondValue, currentOperator));
-operatorArray.forEach(operator => operator.addEventListener('click', updateOperator));
-numbersArray.forEach(number => number.addEventListener('click', updateValue));
+equalSign.addEventListener('click', compute);
+plusMinus.addEventListener('click', plusMinusDisplay);
+operatorArray.forEach(operator => operator.addEventListener('click', updateUpperDisplay));
+numbersArray.forEach(number => number.addEventListener('click', updateLowerDisplay));
 
-let multiply = (num1, num2) => num1 * num2;
+let multiply = (num1, num2) => (num1 * num2).toFixed(2);
 let divide = (num1, num2) => (num1 / num2).toFixed(2);
 let subtract = (num1, num2) => num1 - num2;
 let add = (num1, num2) => num1 + num2;
 
-let result = 0;
-function operate(num1, num2, operator) {
-    if (operator === `&#215;`) {
-        result = multiply(num1, num2);
-        displayLower.innerText = `${result}`;
-        return result;
-    }
-    else if (operator === `&#247;`) {
-        result = divide(num1, num2);
-        displayLower.innerText = `${result}`;
-        return result;
-    }
-    else if (operator === `&#8722;`) {
-        result = subtract(num1, num2);
-        displayLower.innerText = `${result}`;
-        return result;
-    }
-    else if (operator === `&#43;`) {
-        result = add(num1, num2);
-        displayLower.innerText = `${result}`;
-        return result;
+function operate(operator, num1, num2) {
+    num1 = Number(num1);
+    num2 = Number(num2);
+    switch (operator) {
+        case '+': 
+            return add(num1, num2);
+        case '−':
+            return subtract(num1, num2);
+        case '×':
+            return multiply(num1, num2);
+        case '÷':
+            if (num2 == 0) {
+                displayLower.innerText = 'ERROR';
+            }
+            else {
+            return divide(num1, num2)
+        }
+        default: return null;
     }
 }
 
-function updateOperator(e) {
-    if (inputFirstValue) {
-    currentOperator = `${e.target.value}`;
-    inputFirstValue = false;
-    displayLower.innerText += ` ${e.target.value}`; 
-    return currentOperator;
-    }
-} 
-
-function updateValue(e) {
-    if (inputFirstValue) {
-        if (firstValue === 0) {
-            firstValue = e.target.value;
-            displayLower.innerText = `${firstValue}`;
-        }
-        else {
-        firstValue += `${e.target.value}`;
-        displayLower.innerText = `${firstValue}`;
-        }
-    return firstValue;
-    }            
-    if (!inputFirstValue) {
-        if (secondValue === 0) {
-            secondValue = e.target.value;
-            displayUpper.innerText = displayLower.innerText;
-            displayLower.innerText = `${secondValue}`;
-        }
-        else {
-            secondValue += `${e.target.value}`;
-            displayLower.innerHTML = `${secondValue}`
-        }
-    return secondValue;
-    } 
+function compute() {
+    storedValue = operate(currentOperator, storedValue, displayValue);
+    displayValue = DEFAULT_VALUE;
+    displayUpper.innerText = `${storedValue}`;
+    displayLower.innerText = `${storedValue}`;
 }
 
+function updateDisplayValue(e) {
+    if (displayValue != 0) {
+        displayValue += `${e.target.value}`;
+    }
+    if (displayValue == 0) {
+        displayValue = e.target.value;
+    }
+}
+
+function updateLowerDisplay(e) {    
+    if (displayValue.length == 10) {
+        displayLower.innerText = 'ERROR';
+        displayValue = DEFAULT_VALUE;
+    }
+    else {
+        updateDisplayValue(e);
+        displayLower.innerText = `${displayValue}`;
+    }   
+}
+
+function updateUpperDisplay(e) {
+    if (storedValue == 0) {
+        storedValue = displayValue;    
+        displayValue = DEFAULT_VALUE;
+        currentOperator = e.target.value;        
+        displayUpper.innerText = `${storedValue}` + ` ${currentOperator}`;
+        displayLower.innerText = '';     
+    }
+    else {
+        compute(currentOperator, storedValue, displayValue);
+        currentOperator = e.target.value;        
+        displayUpper.innerText = `${storedValue}` + ` ${currentOperator}`;
+        displayLower.innerText = '';     
+    }
+}
+
+function plusMinusDisplay() {
+    if (storedValue == 0) {
+        displayValue *= -1;
+        displayLower.innerText = `${displayValue}`
+    }
+    else {
+        storedValue *= -1;
+        displayUpper.innerText = `${storedValue}`;
+        displayLower.innerText = `${storedValue}`;
+    }
+}
 
 function clearCalculator() {
-    inputFirstValue = true;
-    firstValue = 0;
-    secondValue = 0;
+    displayValue = DEFAULT_VALUE;
+    storedValue = DEFAULT_VALUE;
     displayUpper.innerText = '';
     displayLower.innerText = 0;
 }
