@@ -1,1 +1,1 @@
-# odin-calculator
+This is my submission for TheOdinProject calculator project.
