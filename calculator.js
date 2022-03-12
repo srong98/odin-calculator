@@ -8,7 +8,7 @@ const numbers = document.querySelectorAll('.numpad');
 let numbersArray = Array.from(numbers);
 
 const operators = document.querySelectorAll('.operator');
-let operatorArray = Array.from(operators);
+let operatorsArray = Array.from(operators);
 
 const mathAdd = document.getElementById('plus');
 const mathSubtract = document.getElementById('minus');
@@ -18,19 +18,23 @@ const displayUpper = document.getElementById('display-upper');
 const displayLower = document.getElementById('display-lower');
 const equalSign = document.getElementById('equal');
 const clear = document.getElementById('clear');
-const sqrt = document.getElementById('sqrt');
+const sqrtButton = document.getElementById('sqrt');
 const plusMinus = document.getElementById('plusminus');
+const deleteCharacter = document.getElementById('delete');
 
 clear.addEventListener('click', clearCalculator);
 equalSign.addEventListener('click', compute);
 plusMinus.addEventListener('click', plusMinusDisplay);
-operatorArray.forEach(operator => operator.addEventListener('click', updateUpperDisplay));
+sqrtButton.addEventListener('click', useSquareRoot);
+deleteCharacter.addEventListener('click', deleteLastCharacter);
+operatorsArray.forEach(operator => operator.addEventListener('click', updateUpperDisplay));
 numbersArray.forEach(number => number.addEventListener('click', updateLowerDisplay));
 
-let multiply = (num1, num2) => (num1 * num2).toFixed(2);
-let divide = (num1, num2) => (num1 / num2).toFixed(2);
+let multiply = (num1, num2) => Math.round(num1 * num2 * 100) / 100;
+let divide = (num1, num2) => Math.round(num1 / num2 * 100) / 100;
 let subtract = (num1, num2) => num1 - num2;
 let add = (num1, num2) => num1 + num2;
+let sqrt = (num1) => Math.round(num1 ** (1/2) * 100) / 100;;
 
 function operate(operator, num1, num2) {
     num1 = Number(num1);
@@ -44,7 +48,7 @@ function operate(operator, num1, num2) {
             return multiply(num1, num2);
         case '÷':
             if (num2 == 0) {
-                displayLower.innerText = 'ERROR';
+                return displayLower.innerText = 'div0';
             }
             else {
             return divide(num1, num2)
@@ -56,8 +60,15 @@ function operate(operator, num1, num2) {
 function compute() {
     storedValue = operate(currentOperator, storedValue, displayValue);
     displayValue = DEFAULT_VALUE;
-    displayUpper.innerText = `${storedValue}`;
-    displayLower.innerText = `${storedValue}`;
+    if (storedValue == `div0`)  {
+            displayUpper.innerText = '';
+            displayLower.innerText = 'Div by 0: ERROR';
+            storedValue = 0;
+        }
+    else {
+        displayUpper.innerText = `${storedValue}`;
+        displayLower.innerText = `${storedValue}`;
+    }
 }
 
 function updateDisplayValue(e) {
@@ -88,23 +99,59 @@ function updateUpperDisplay(e) {
         displayUpper.innerText = `${storedValue}` + ` ${currentOperator}`;
         displayLower.innerText = '';     
     }
-    else {
-        compute(currentOperator, storedValue, displayValue);
-        currentOperator = e.target.value;        
+    else if (e.target.value == '×' || e.target.value == '÷') {
+        displayValue = 1;
+        compute();
+        currentOperator = e.target.value;     
         displayUpper.innerText = `${storedValue}` + ` ${currentOperator}`;
-        displayLower.innerText = '';     
+        displayLower.innerText = '';  
+    }   
+    else {
+        compute();
+        currentOperator = e.target.value;     
+        displayUpper.innerText = `${storedValue}` + ` ${currentOperator}`;
+        displayLower.innerText = ''; 
     }
 }
 
 function plusMinusDisplay() {
-    if (storedValue == 0) {
-        displayValue *= -1;
-        displayLower.innerText = `${displayValue}`
-    }
-    else {
+    if (displayValue == 0 && displayLower.innerText == `${storedValue}`) {
         storedValue *= -1;
         displayUpper.innerText = `${storedValue}`;
         displayLower.innerText = `${storedValue}`;
+    }
+    else {
+        displayValue *= -1;
+        displayLower.innerText = `${displayValue}`;
+    }
+}
+
+function useSquareRoot() {
+    if (displayValue == 0 && storedValue == 0) {
+        return;
+    }
+    else if (storedValue == 0) {
+        displayValue = sqrt(displayValue);
+        displayLower.innerText = `${displayValue}`;
+        return displayValue;
+    }
+    else { 
+        storedValue = sqrt(storedValue);
+        displayUpper.innerText = '';
+        displayLower.innerText = `${storedValue}`;
+        return storedValue;
+    }
+} 
+
+function deleteLastCharacter() {
+    if (displayLower.innerText == `${storedValue}`) {
+        storedValue = storedValue.slice(0, -1);
+        displayUpper.innerText = `${storedValue}`;
+        displayLower.innerText = `${storedValue}`;
+    }
+    else {
+        displayValue = displayValue.slice(0, -1);
+        displayLower.innerText = `${displayValue}`;
     }
 }
 
