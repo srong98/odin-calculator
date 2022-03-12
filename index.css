@@ -52,6 +52,13 @@ button {
     padding-top: 10px;
     padding-right: 10px;
     align-items: flex-end;
+    background-color: rgb(34, 34, 34);
+}
+.operator {
+    background-color: rgb(201, 91, 79);
+}
+#equal {
+    background-color:rgb(109, 43, 36)
 }
 .buttons {
     height: 70%;
@@ -67,4 +74,15 @@ button {
 #display-lower {
     height: 70%;
     font-size: 50px;
+}
+#clear,
+#delete {
+    background-color:rgb(27, 114, 85);
+}
+#decimal,
+#plusminus {
+    background-color:rgb(106, 50, 117);
+}
+#clear {
+    grid-area: 1 / 1 / 2 / 3;
 }
